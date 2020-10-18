@@ -19,14 +19,23 @@ exports.getCharacters = async (req, res, next) => {
                 .where('_id').in(ids)
                 .exec();
         } else {
-            characters = await Character.find();
+            characters = await Character.find({ user: req.userId });
         }
         if (!characters.length) {
             const error = new Error('No characters found.');
             error.statusCode = 404;
             throw error;
         }
-        res.status(200).json({ message: 'Characters fetched.', characters: characters });
+        const updatedChars = characters.map((char) => {
+            return {
+                ...char._doc,
+                _id: char._id.toString()
+            };
+        });
+        res.status(200).json({
+            message: 'Characters fetched.',
+            characters: updatedChars
+        });
     } catch (err) {
         if (!err.statusCode) {
             err.statusCode = 500;

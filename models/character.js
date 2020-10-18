@@ -18,6 +18,7 @@ const characterSchema = new Schema({
         ref: 'Character'
     }],
     locations: [String],
+    factions: [String],
     characteristics: [String],
     biography: String,
     notableInteractions: [String],

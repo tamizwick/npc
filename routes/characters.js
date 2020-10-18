@@ -1,11 +1,13 @@
 const express = require('express');
 const { body, query } = require('express-validator');
 const mongoose = require('mongoose');
+const checkAuth = require('../middleware/checkAuth');
 const characterController = require('../controllers/characters');
 
 const router = express.Router();
 
 router.get('/',
+    checkAuth,
     query('ids')
         .custom((value, { req }) => {
             let ids;
@@ -25,6 +27,7 @@ router.get('/',
 );
 
 router.post('/new',
+    checkAuth,
     body('firstName')
         .trim()
         .not()
@@ -34,6 +37,7 @@ router.post('/new',
 );
 
 router.put('/update/:charId',
+    checkAuth,
     body('firstName')
         .trim()
         .not()
@@ -41,6 +45,6 @@ router.put('/update/:charId',
     characterController.putUpdateCharacter
 );
 
-router.delete('/delete/:charId', characterController.deleteCharacter);
+router.delete('/delete/:charId', checkAuth, characterController.deleteCharacter);
 
 module.exports = router;
