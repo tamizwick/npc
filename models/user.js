@@ -19,10 +19,15 @@ const userSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Post'
     }],
-    classifications: [{
-        name: String,
-        options: []
-    }]
+    options: {
+        race: [],
+        gender: [],
+        alignment: [],
+        knownAssociations: [],
+        locations: [],
+        factions: [],
+        campaigns: []
+    }
 });
 
 module.exports = mongoose.model('User', userSchema);

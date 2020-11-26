@@ -47,4 +47,6 @@ router.put('/update/:charId',
 
 router.delete('/delete/:charId', checkAuth, characterController.deleteCharacter);
 
+router.get('/options', checkAuth, characterController.getOptions);
+
 module.exports = router;

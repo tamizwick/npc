@@ -63,20 +63,27 @@ exports.postNewCharacter = async (req, res, next) => {
             appearance: req.body.appearance,
             knownAssociates: req.body.knownAssociates ? [...req.body.knownAssociates] : [],
             locations: req.body.locations ? [...req.body.locations] : [],
+            factions: req.body.factions ? [...req.body.factions] : [],
             characteristics: req.body.characteristics ? [...req.body.characteristics] : [],
             biography: req.body.biography,
             notableInteractions: req.body.notableInteractions ? [...req.body.notableInteractions] : [],
-            user: req.body.user
+            campaigns: req.body.campaigns ? [...req.body.campaigns] : [],
+            user: req.userId
         });
-        await character.save();
-        const user = await User.findById(req.body.user);
+        const char = await character.save();
+        const user = await User.findById(req.userId);
         if (!user) {
             const error = new Error('User not found.');
             error.statusCode = 404;
             throw error;
         }
         user.characters.push(character);
+
+        //Update options
+        updateCharOptions(user, char);
+
         await user.save();
+
         res.status(200).json({ message: `${character.firstName} created.` });
     } catch (err) {
         if (!err.statusCode) {
@@ -144,5 +151,46 @@ exports.deleteCharacter = async (req, res, next) => {
             err.statusCode = 500;
         }
         next(err);
+    }
+};
+
+exports.getOptions = async (req, res, next) => {
+    try {
+        const user = await User.findById(req.userId);
+        if (!user) {
+            const error = new Error('User not found.');
+            error.statusCode = 404;
+            throw error;
+        }
+
+        res.status(200).json({
+            message: 'Options fetched.',
+            options: user.options
+        });
+    } catch (err) {
+        if (!err.statusCode) {
+            err.statusCode = 500;
+        }
+        next(err);
+    }
+};
+
+const updateCharOptions = (user, char) => {
+    const fieldsWithOptions = ['race', 'gender', 'alignment', 'knownAssociates', 'locations', 'factions', 'campaigns'];
+    for (const field of fieldsWithOptions) {
+        const prevOptions = user.options[field];
+        const isArray = Array.isArray(char[field]);
+        if (isArray) {
+            char[field].forEach((option) => {
+                if (!prevOptions.includes(option)) {
+                    prevOptions.push(option);
+                }
+            });
+        } else {
+            if (!prevOptions.includes(char[field])) {
+                prevOptions.push(char[field]);
+            }
+        }
+        user.options[field] = prevOptions;
     }
 };

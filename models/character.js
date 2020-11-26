@@ -22,6 +22,7 @@ const characterSchema = new Schema({
     characteristics: [String],
     biography: String,
     notableInteractions: [String],
+    campaigns: [String],
     user: {
         type: Schema.Types.ObjectId,
         ref: 'User',
