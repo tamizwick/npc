@@ -14,17 +14,20 @@ exports.getCharacters = async (req, res, next) => {
         }
         let characters;
         if (req.query.ids) {
-            ids = req.query.ids.split(',');
+            const ids = req.query.ids.split(',');
             characters = await Character.find()
                 .where('_id').in(ids)
+                .exec();
+        } else if (req.query.campaigns) {
+            const campaigns = req.query.campaigns.split(',');
+            characters = await Character.find({ user: req.userId })
+                .where('campaigns').in(campaigns)
                 .exec();
         } else {
             characters = await Character.find({ user: req.userId });
         }
         if (!characters.length) {
-            const error = new Error('No characters found.');
-            error.statusCode = 404;
-            throw error;
+            return res.status(404).json({ message: 'No characters found', characters: [] });
         }
         const updatedChars = characters.map((char) => {
             return {
