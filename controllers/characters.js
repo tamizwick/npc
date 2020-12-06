@@ -179,13 +179,13 @@ exports.getOptions = async (req, res, next) => {
 };
 
 const updateCharOptions = (user, char) => {
-    const fieldsWithOptions = ['race', 'gender', 'alignment', 'knownAssociates', 'locations', 'factions', 'campaigns'];
+    const fieldsWithOptions = ['race', 'gender', 'alignment', 'locations', 'factions', 'campaigns'];
     for (const field of fieldsWithOptions) {
         const prevOptions = user.options[field];
         const isArray = Array.isArray(char[field]);
         if (isArray) {
             char[field].forEach((option) => {
-                if (!prevOptions.includes(option)) {
+                if (!prevOptions.includes(option) || !prevOptions.length) {
                     prevOptions.push(option);
                 }
             });

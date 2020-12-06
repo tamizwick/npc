@@ -23,7 +23,6 @@ const userSchema = new Schema({
         race: [],
         gender: [],
         alignment: [],
-        knownAssociations: [],
         locations: [],
         factions: [],
         campaigns: []
